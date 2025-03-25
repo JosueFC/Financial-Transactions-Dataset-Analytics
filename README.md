@@ -45,3 +45,19 @@ Which are the top merchant categories for high-spending customers?
 | 8   | 5812 | Eating Places and Restaurants     | 26,348,225.47  | 999,738            |
 | 9   | 7538 | Automotive Service Shops          | 24,955,640.73  | 478,263            |
 | 10  | 4814 | Telecommunication Services        | 24,726,472.83  | 218,243            |
+
+# Time series analysis
+![Rplot02](https://github.com/user-attachments/assets/cded3300-d10b-4735-8249-d6a545e5f2fe)
+
+Seasonal subseries
+![SeasonalTrends](https://github.com/user-attachments/assets/f71d8005-698d-418a-8b90-0dbb5ece52ba)
+
+Time series analysis
+![Time series](https://github.com/user-attachments/assets/9a898930-670f-40db-80c7-674195e1dd2f)
+
+Forecasting
+![Forecasted](https://github.com/user-attachments/assets/3d6c9f1c-d830-47d9-a6f0-ab71533dd3ce)
+
+
+
+
