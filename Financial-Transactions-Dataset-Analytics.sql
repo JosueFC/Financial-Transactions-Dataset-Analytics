@@ -107,6 +107,72 @@ ORDER BY
     total_spent DESC
     LIMIT 10;
 
+--Create a new table for the demographic information of the high spenders
+WITH SpendingThreshold AS (
+    SELECT 
+        APPROX_QUANTILES(total_spent, 100)[OFFSET(90)] AS percentile_cutoff
+    FROM (
+        SELECT 
+            client_id, 
+            SUM(amount) AS total_spent
+        FROM 
+            `side-projects-454319.Financial_Transactions_Dataset.transactions_data`
+        GROUP BY 
+            client_id
+    )
+),
+HighSpenders AS (
+    SELECT 
+        t.client_id, 
+        SUM(t.amount) AS total_spent
+    FROM 
+        `side-projects-454319.Financial_Transactions_Dataset.transactions_data` t
+    GROUP BY 
+        t.client_id
+    HAVING 
+        SUM(t.amount) >= (SELECT percentile_cutoff FROM SpendingThreshold)
+)
+SELECT 
+    u.*,
+    hs.total_spent
+FROM 
+    `side-projects-454319.Financial_Transactions_Dataset.users_data` u
+JOIN 
+    HighSpenders hs 
+ON 
+    u.id = hs.client_id
+ORDER BY 
+    hs.total_spent DESC;
 
+-- Identify risky clients (where Debt-to-Income Ratio (DTI) is higher than 40%)
+WITH RiskyClients AS (
+    SELECT 
+        id,
+        yearly_income,
+        total_debt,
+        ROUND((total_debt / NULLIF(yearly_income, 0)) * 100, 2) AS dti_ratio
+    FROM `side-projects-454319.Financial_Transactions_Dataset.users_data`
+)
+SELECT * 
+FROM RiskyClients
+WHERE dti_ratio > 40
+ORDER BY dti_ratio DESC;
+
+--Create a table with the demographic data for those risky clients
+WITH RiskyClients AS (
+    SELECT 
+        id,
+        yearly_income,
+        total_debt,
+        ROUND((total_debt / NULLIF(yearly_income, 0)) * 100, 2) AS dti_ratio
+    FROM `side-projects-454319.Financial_Transactions_Dataset.users_data`
+)
+SELECT u.*, 
+       RiskyClients.dti_ratio
+FROM `side-projects-454319.Financial_Transactions_Dataset.users_data` u
+JOIN RiskyClients
+    ON u.id = RiskyClients.id
+WHERE RiskyClients.dti_ratio > 40
+ORDER BY RiskyClients.dti_ratio DESC;
 
 
